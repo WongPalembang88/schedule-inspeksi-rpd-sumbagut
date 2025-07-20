@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Inspection RPD Sumbagut</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #eef2f7;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            position: relative; /* Untuk posisi logo */
+        }
+        .pertamina-logo {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 80px; /* Sesuaikan ukuran logo */
+            height: auto;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        h1 {
+            font-size: 2.5em;
+            color: #007bff;
+        }
+        h2 { /* Menghilangkan h2 "Tambah/Edit Jadwal" */
+            display: none;
+        }
+        .form-section {
+            background-color: #f9f9f9;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+            display: grid;
+            gap: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #4a4a4a;
+        }
+        .form-group input[type="date"],
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group textarea,
+        .form-group select {
+            width: calc(100% - 22px); /* Adjust for padding and border */
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: #ffffff;
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+        .form-group textarea {
+            resize: vertical; /* Allow vertical resizing */
+            min-height: 60px;
+        }
+        .form-group select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%20viewBox%3D%220%200%20292.4%20292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13%205.7L146.2%20216.5%2018.8%2075.1c-3.2-3.2-8.3-5.3-13.6-5.3-5.3%200-10.5%202.1-13.6%205.3-6.4%206.4-6.4%2016.7%200%2023.1l133%20133c6.4%206.4%2017.6%206.4%2024%200l133-133c6.4-6.4%206.4-16.7%200-23.1-3.2-3.2-8.4-5.2-13.6-5.2z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 14px;
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            width: 100%;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        .button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .alert-message {
+            background-color: #ffe0b2;
+            color: #e65100;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ffcc80;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+        .success-message {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+
+        /* Calendar Styles */
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: #f0f8ff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .calendar-nav button {
+            background: none;
+            border: 1px solid #007bff;
+            color: #007bff;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .calendar-nav button:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        .calendar-nav span {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .weekly-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .day-column {
+            background-color: #fdfdfd;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+            position: relative;
+        }
+        .day-header {
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        .schedule-item {
+            background-color: #e6f3ff;
+            border-left: 4px solid #007bff;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            position: relative;
+            cursor: pointer; /* Menandakan bisa diklik/hover untuk pop-up */
+            margin-bottom: 5px; /* Spasi antar item */
+        }
+        .schedule-item:hover {
+            background-color: #d1e7ff;
+        }
+        .schedule-item strong {
+            color: #2c3e50;
+            display: block; /* Agar nama inspektur di baris baru */
+        }
+        /* Tooltip/Pop-up Styles */
+        .tooltip {
+            visibility: hidden;
+            width: 280px; /* Lebarkan sedikit */
+            background-color: #555;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 100;
+            bottom: 100%; /* Posisikan di atas item */
+            left: 50%;
+            margin-left: -140px; /* Tengah horizontal */
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+            font-size: 0.85em;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            white-space: normal; /* Izinkan teks melengkung */
+        }
+        .tooltip::after {
+            content: " ";
+            position: absolute;
+            top: 100%; /* Arrow at the bottom */
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+        .schedule-item:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .tooltip strong {
+            color: #fff; /* Pastikan strong di tooltip tetap putih */
+        }
+        .tooltip span {
+            display: block; /* Setiap detail di baris baru */
+            margin-bottom: 2px;
+        }
+
+        .schedule-item .action-buttons {
+            margin-top: 5px;
+            display: flex;
+            gap: 5px;
+            justify-content: flex-end; /* Pindahkan tombol ke kanan */
+        }
+        .schedule-item .action-buttons button {
+            background: none; /* Hilangkan background default */
+            border: none; /* Hilangkan border */
+            padding: 0; /* Hilangkan padding */
+            font-size: 1.2em; /* Ukuran ikon */
+            cursor: pointer;
+            color: #007bff; /* Warna ikon */
+            transition: color 0.2s ease;
+        }
+        .schedule-item .action-buttons .delete-btn {
+            color: #dc3545; /* Warna ikon hapus */
+        }
+        .schedule-item .action-buttons button:hover {
+            color: #0056b3; /* Warna hover */
+        }
+        .schedule-item .action-buttons .delete-btn:hover {
+            color: #c82333;
+        }
+
+        .no-schedule {
+            font-style: italic;
+            color: #888;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        .empty-list-global {
+            text-align: center;
+            color: #888;
+            margin-top: 30px;
+            font-size: 1.1em;
+        }
+        .suggestion-message {
+            background-color: #e0f2f7;
+            color: #007bff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #a7d9f0;
+        }
+
+        /* Edit/Cancel buttons for form */
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .form-actions .button {
+            width: 50%;
+        }
+        .form-actions .cancel-button {
+            background-color: #6c757d;
+        }
+        .form-actions .cancel-button:hover {
+            background-color: #5a6268;
+        }
+    </style>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <img src="https://bluepacservices.co.id/wp-content/uploads/2022/10/PT_Pertamina_Patra_Niaga.svg-1024x576.png" alt="Logo Pertamina" class="pertamina-logo">
+        <h1 style="text-align: center;">Schedule Inspection RPD Sumbagut</h1>
+
+        <div class="form-section">
+            <div id="alertMessageContainer"></div> 
+
+            <div class="form-group">
+                <label for="startDateInput">1. Start Date:</label>
+                <input type="date" id="startDateInput">
+            </div>
+            <div class="form-group">
+                <label for="endDateInput">2. End Date:</label>
+                <input type="date" id="endDateInput">
+            </div>
+            <div class="form-group">
+                <label for="jenisSelect">3. Jenis Inspeksi:</label>
+                <select id="jenisSelect">
+                    </select>
+            </div>
+            <div class="form-group">
+                <label for="lokasiInput">4. Lokasi Inspeksi:</label>
+                <input type="text" id="lokasiInput" placeholder="Contoh: SPBU Jl. Merdeka">
+            </div>
+            <div class="form-group">
+                <label for="justifikasiInput">5. Dasar Pelaksanaan Inspeksi:</label>
+                <textarea id="justifikasiInput" placeholder="Contoh: Perlu cek rutin kualitas material"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="fungsiPemintaInput">6. Fungsi Peminta Inspeksi:</label>
+                <input type="text" id="fungsiPemintaInput" placeholder="Contoh: Divisi Logistik">
+            </div>
+            <div class="form-group">
+                <label for="inspekturSelect">7. Inspektur (Otomatis):</label>
+                <select id="inspekturSelect">
+                    </select>
+            </div>
+            <div class="form-actions">
+                <button class="button" id="tambahJadwalButton" onclick="handleSaveSchedule()">Tambah Jadwal</button>
+                <button class="button cancel-button" id="cancelEditButton" style="display: none;" onclick="cancelEdit()">Batal Edit</button>
+            </div>
+            
+        </div>
+
+        <h2>Jadwal Mingguan</h2>
+        <div class="calendar-nav">
+            <button onclick="changeWeek(-1)">← Minggu Sebelumnya</button>
+            <span id="currentWeekRange"></span>
+            <button onclick="changeWeek(1)">Minggu Selanjutnya →</button>
+        </div>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button class="button" style="width: auto; padding: 10px 20px;" onclick="downloadExcel()">Download Jadwal ke Excel</button>
+        </div>
+        <div class="weekly-calendar" id="weeklyCalendar">
+            </div>
+        <p class="empty-list-global" id="emptyCalendarMessage" style="display: none;"></p>
+        <div class="suggestion-message" id="suggestionMessage" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Data Master
+        const ALL_INSPEKTORS = ['Azhar', 'Imron', 'Taufik', 'Gusfi']; 
+        const jenisInspeksi = ['Cek Material', 'Cek SPBU', 'Cek SPBE', 'Cek BPT', 'Cek Proyek', 'Monitoring', 'Punchlist', 'Lain-lain'];
+        const SUPERUSER_PASSWORD = 'superuser123'; 
+
+        // --- KONFIGURASI GITHUB DATA (WAJIB ANDA UBAH!) ---
+        // GANTI DUA BARIS DI BAWAH INI dengan informasi repositori Anda:
+        const GITHUB_USERNAME = 'WongPalembang88'; // Contoh: 'budi-santoso'
+        const GITHUB_REPO_NAME = 'schedule-inspeksi-rpd-sumbagut'; // Contoh: 'schedule-inspeksi-rpd-sumbagut'
+        // Biarkan GITHUB_FILE_PATH tetap seperti ini:
+        const GITHUB_FILE_PATH = 'jadwal_data.json';    
+
+        // Dua baris ini akan otomatis terbentuk setelah Anda mengisi di atas:
+        const GITHUB_RAW_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${GITHUB_REPO_NAME}/main/${GITHUB_FILE_PATH}`;
+        const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO_NAME}/contents/${GITHUB_FILE_PATH}`;
+        // --- AKHIR KONFIGURASI GITHUB DATA ---
+
+        // Variabel global
+        let jadwal = []; 
+        let currentWeekStart = new Date(); 
+        let editingIndex = -1; 
+        let githubSha = null; // Untuk menyimpan SHA dari file saat ini (penting untuk update GitHub)
+        let githubToken = null; // Untuk menyimpan Personal Access Token GitHub dari editor
+
+        // Ambil elemen HTML
+        const startDateInput = document.getElementById('startDateInput');
+        const endDateInput = document.getElementById('endDateInput');
+        const lokasiInput = document.getElementById('lokasiInput');
+        const jenisSelect = document.getElementById('jenisSelect');
+        const justifikasiInput = document.getElementById('justifikasiInput'); 
+        const fungsiPemintaInput = document.getElementById('fungsiPemintaInput');
+        const inspekturSelect = document.getElementById('inspekturSelect');
+        const alertMessageContainer = document.getElementById('alertMessageContainer');
+        const weeklyCalendarDiv = document.getElementById('weeklyCalendar');
+        const currentWeekRangeSpan = document.getElementById('currentWeekRange');
+        const emptyCalendarMessage = document.getElementById('emptyCalendarMessage');
+        const tambahJadwalButton = document.getElementById('tambahJadwalButton');
+        const cancelEditButton = document.getElementById('cancelEditButton');
+        const suggestionMessage = document.getElementById('suggestionMessage');
+
+
+        // --- Fungsi Utilitas ---
+
+        // Fungsi untuk format tanggal menjadi YYYY-MM-DD
+        function formatDate(date) {
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Fungsi untuk menghitung durasi dalam hari antara dua tanggal
+        function getDurationInDays(startDate, endDate) {
+            const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays + 1; // +1 karena durasi meliputi start dan end date
+        }
+
+        // Fungsi untuk mendapatkan tanggal awal minggu (Minggu)
+        function getStartOfWeek(date) {
+            const d = new Date(date);
+            const day = d.getDay(); // 0 for Sunday, 1 for Monday, etc.
+            const diff = d.getDate() - day; // Adjust to Sunday
+            const start = new Date(d.setDate(diff));
+            start.setHours(0, 0, 0, 0); // Reset time to start of day
+            return start;
+        }
+
+        // Fungsi untuk menampilkan pesan (alert/success)
+        function showMessage(message, type = 'alert') {
+            alertMessageContainer.innerHTML = ''; 
+            const msgDiv = document.createElement('div');
+            msgDiv.textContent = message;
+            msgDiv.classList.add('alert-message');
+            if (type === 'success') {
+                msgDiv.classList.add('success-message');
+            }
+            alertMessageContainer.appendChild(msgDiv);
+
+            setTimeout(() => {
+                msgDiv.remove();
+            }, 3000);
+        }
+
+        /**
+         * Checks if a given inspector is available for a specific date range (start to end date).
+         * @param {string} inspectorName - The name of the inspector.
+         * @param {Date} reqStartDate - The start date of the requested period.
+         * @param {Date} reqEndDate - The end date of the requested period.
+         * @param {number} excludeIndex - Optional. Index of the schedule to exclude from checks (for edit mode).
+         * @returns {boolean} True if the inspector is available, false otherwise.
+         */
+        function isInspectorAvailable(inspectorName, reqStartDate, reqEndDate, excludeIndex = -1) {
+            // Normalisasi waktu untuk perbandingan yang akurat
+            reqStartDate.setHours(0,0,0,0);
+            reqEndDate.setHours(0,0,0,0);
+
+            // Periksa tumpang tindih dengan jadwal yang sudah ada
+            return !jadwal.some((j, idx) => {
+                if (idx === excludeIndex) return false; // Abaikan jadwal yang sedang diedit
+
+                if (j.inspektur !== inspectorName) return false; 
+
+                const existingStartDate = new Date(j.tanggal); // j.tanggal adalah start date
+                existingStartDate.setHours(0,0,0,0); 
+
+                const existingEndDate = new Date(j.tanggal);
+                existingEndDate.setDate(existingEndDate.getDate() + j.durasi - 1); // Hitung end date dari durasi
+                existingEndDate.setHours(0,0,0,0); 
+
+                // Cek tumpang tindih: (Start baru <= End lama) AND (End baru >= Start lama)
+                return (reqStartDate <= existingEndDate && reqEndDate >= existingStartDate);
+            });
+        }
+
+
+        // Mengisi dropdown (select) dengan data master untuk jenis inspeksi
+        function populateJenisInspeksi() {
+            jenisSelect.innerHTML = ''; 
+            jenisInspeksi.forEach(jenis => {
+                const option = document.createElement('option');
+                option.value = jenis;
+                option.textContent = jenis;
+                jenisSelect.appendChild(option);
+            });
+        }
+
+        // Mengacak array (Fisher-Yates (Knuth) Shuffle)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+            }
+            return array;
+        }
+
+        // Mengisi dropdown inspektur berdasarkan ketersediaan di rentang tanggal yang dipilih
+        function updateInspekturOptions() {
+            const startStr = startDateInput.value;
+            const endStr = endDateInput.value;
+            inspekturSelect.innerHTML = ''; 
+            tambahJadwalButton.disabled = true; 
+
+            if (!startStr || !endStr) {
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Pilih Start Date & End Date';
+                inspekturSelect.appendChild(defaultOption);
+                return;
+            }
+
+            const reqStartDate = new Date(startStr);
+            const reqEndDate = new Date(endStr);
+
+            if (reqStartDate > reqEndDate) {
+                const errorOption = document.createElement('option');
+                errorOption.value = '';
+                errorOption.textContent = 'End Date harus setelah Start Date';
+                inspekturSelect.appendChild(errorOption);
+                showMessage('End Date tidak boleh sebelum Start Date!', 'alert');
+                return;
+            }
+            
+            let availableInspektur = ALL_INSPEKTORS.filter(inspektur => {
+                return isInspectorAvailable(inspektur, reqStartDate, reqEndDate, editingIndex);
+            });
+
+            // Acak daftar inspektur yang tersedia
+            availableInspektur = shuffleArray(availableInspektur);
+
+
+            if (availableInspektur.length === 0) {
+                const noInspekturOption = document.createElement('option');
+                noInspekturOption.value = '';
+                noInspekturOption.textContent = 'Semua inspektur sibuk di rentang tanggal ini';
+                inspekturSelect.appendChild(noInspekturOption);
+                showMessage('Semua inspektur sudah memiliki jadwal di rentang tanggal ini. Silakan pilih tanggal lain.', 'alert');
+            } else {
+                availableInspektur.forEach(inspektur => {
+                    const option = document.createElement('option');
+                    option.value = inspektur;
+                    option.textContent = inspektur;
+                    inspekturSelect.appendChild(option);
+                });
+                tambahJadwalButton.disabled = false; 
+            }
+            
+            // Atur pilihan inspektur di dropdown
+            if (editingIndex !== -1 && !inspekturSelect.value) { 
+                const currentInspektur = jadwal[editingIndex].inspektur;
+                if (availableInspektur.includes(currentInspektur)) {
+                    inspekturSelect.value = currentInspektur;
+                } else {
+                    inspekturSelect.value = availableInspektur[0] || ''; 
+                }
+            } else if (editingIndex === -1 && !inspekturSelect.value) {
+                inspekturSelect.value = availableInspektur[0] || '';
+            }
+        }
+
+
+        // --- Fungsi Interaksi GitHub API ---
+
+        // Fungsi untuk mengambil data jadwal dari GitHub
+        async function fetchJadwalFromGitHub() {
+            try {
+                const response = await fetch(GITHUB_RAW_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                jadwal = data; // Perbarui array jadwal global
+                showMessage('Jadwal berhasil dimuat dari GitHub.', 'success');
+                renderWeeklyCalendar(); // Render setelah data dimuat
+                updateInspekturOptions(); // Perbarui opsi inspektur
+            } catch (error) {
+                console.error("Error fetching jadwal from GitHub:", error);
+                showMessage('Gagal memuat jadwal dari GitHub. Pastikan file ada, URL benar, dan repositori publik.', 'alert');
+                // Atur jadwal ke array kosong jika gagal memuat
+                jadwal = []; 
+                renderWeeklyCalendar();
+                updateInspekturOptions();
+            }
+        }
+
+        // Fungsi untuk mendapatkan SHA terbaru dari file (diperlukan untuk update)
+        async function getFileSha() {
+            try {
+                const response = await fetch(GITHUB_API_URL, {
+                    headers: {
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Authorization': `token ${githubToken}`
+                    }
+                });
+                if (response.status === 404) {
+                     console.warn("File not found on GitHub. Will try to create a new file.");
+                     return null; // File belum ada, jadi SHA-nya null
+                }
+                if (!response.ok) {
+                    throw new Error(`Failed to get file SHA: ${response.statusText}`);
+                }
+                const data = await response.json();
+                return data.sha;
+            } catch (error) {
+                console.error("Error getting file SHA:", error);
+                showMessage('Gagal mendapatkan SHA file dari GitHub. Periksa koneksi atau token Anda.', 'alert');
+                return null;
+            }
+        }
+
+        // Fungsi untuk menyimpan data jadwal ke GitHub
+        async function saveJadwalToGitHub() {
+            if (!githubToken) {
+                alert('Anda harus memasukkan Personal Access Token GitHub untuk menyimpan perubahan.');
+                return false;
+            }
+
+            const content = btoa(JSON.stringify(jadwal, null, 2)); // Encode to Base64 (pretty print JSON)
+            const currentSha = await getFileSha(); // Dapatkan SHA terbaru
+
+            const payload = {
+                message: "Update jadwal dari aplikasi web", // Pesan commit
+                content: content,
+                sha: currentSha // SHA diperlukan untuk update. Jika null (file baru), GitHub akan membuatnya
+            };
+
+            try {
+                const response = await fetch(GITHUB_API_URL, {
+                    method: currentSha ? 'PUT' : 'PUT', // PUT untuk update/create
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("Error saving to GitHub:", errorData);
+                    let errorMessage = `Gagal menyimpan ke GitHub: ${errorData.message || response.statusText}.`;
+                    if (response.status === 401 || response.status === 403) {
+                        errorMessage += " Periksa kembali Personal Access Token GitHub Anda dan pastikan izinnya benar (scope 'repo').";
+                    } else if (response.status === 409) {
+                        errorMessage += " Ada konflik versi. Coba muat ulang halaman dan simpan lagi.";
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                const result = await response.json();
+                githubSha = result.content.sha; // Perbarui SHA setelah berhasil disimpan
+                showMessage('Jadwal berhasil disimpan ke GitHub!', 'success');
+                return true;
+            } catch (error) {
+                console.error("Error saving to GitHub:", error);
+                showMessage(`${error.message}`, 'alert');
+                return false;
+            }
+        }
+
+
+        // Menambah atau mengedit jadwal
+        async function handleSaveSchedule() {
+            let success = false;
+            if (editingIndex === -1) {
+                success = await tambahJadwal();
+            } else {
+                success = await editJadwal(editingIndex);
+            }
+            if (success) {
+                // Hanya simpan ke GitHub jika operasi lokal berhasil
+                await saveJadwalToGitHub(); 
+            }
+        }
+
+        // Fungsi tambah jadwal
+        async function tambahJadwal() { 
+            const tanggal = startDateInput.value; 
+            const lokasi = lokasiInput.value.trim();
+            const jenis = jenisSelect.value;
+            const justifikasi = justifikasiInput.value.trim();
+            const fungsiPeminta = fungsiPemintaInput.value.trim();
+            const inspektur = inspekturSelect.value;
+
+            const reqStartDate = new Date(tanggal);
+            const reqEndDate = new Date(endDateInput.value);
+            const durasi = getDurationInDays(reqStartDate, reqEndDate);
+
+
+            // Validasi input
+            if (!tanggal || !endDateInput.value || !lokasi || !inspektur || durasi <= 0 || !justifikasi || !fungsiPeminta) {
+                showMessage('Semua kolom harus diisi dan End Date harus setelah Start Date!', 'alert');
+                return false;
+            }
+            
+            if (!isInspectorAvailable(inspektur, reqStartDate, reqEndDate)) {
+                showMessage(`Gagal menambahkan: Inspektur ${inspektur} sibuk.`, 'alert');
+                return false;
+            }
+            
+            jadwal.push({ tanggal, lokasi, jenis, durasi, justifikasi, fungsiPeminta, inspektur });
+            showMessage('Jadwal berhasil ditambahkan!', 'success');
+
+            // Bersihkan input
+            resetForm();
+            renderWeeklyCalendar(); 
+            return true; 
+        }
+
+        // Fungsi edit jadwal
+        async function editJadwal(index) { 
+            const tanggal = startDateInput.value;
+            const lokasi = lokasiInput.value.trim();
+            const jenis = jenisSelect.value;
+            const justifikasi = justifikasiInput.value.trim();
+            const fungsiPeminta = fungsiPemintaInput.value.trim();
+            const inspektur = inspekturSelect.value;
+
+            const reqStartDate = new Date(tanggal);
+            const reqEndDate = new Date(endDateInput.value);
+            const durasi = getDurationInDays(reqStartDate, reqEndDate);
+
+            // Validasi input
+            if (!tanggal || !endDateInput.value || !lokasi || !inspektur || durasi <= 0 || !justifikasi || !fungsiPeminta) {
+                showMessage('Semua kolom harus diisi dan End Date harus setelah Start Date!', 'alert');
+                return false;
+            }
+            
+            if (!isInspectorAvailable(inspektur, reqStartDate, reqEndDate, index)) { // Lewati jadwal yang sedang diedit
+                showMessage(`Gagal mengubah: Inspektur ${inspektur} sibuk.`, 'alert');
+                return false;
+            }
+
+            jadwal[index] = { tanggal, lokasi, jenis, durasi, justifikasi, fungsiPeminta, inspektur };
+            showMessage('Jadwal berhasil diperbarui!', 'success');
+
+            resetForm();
+            renderWeeklyCalendar();
+            return true; 
+        }
+
+        // Mengatur form untuk mode edit
+        function prepareEdit(index) {
+            const password = prompt('Masukkan password Super User untuk mengedit:');
+            if (password !== SUPERUSER_PASSWORD) {
+                alert('Password salah. Anda tidak memiliki hak akses untuk mengedit.');
+                return;
+            }
+            
+            // Minta Personal Access Token GitHub jika belum ada
+            if (!githubToken) {
+                githubToken = prompt('Masukkan Personal Access Token GitHub Anda (Token ini tidak akan disimpan di browser Anda secara permanen):');
+                if (!githubToken) {
+                    alert('Token GitHub diperlukan untuk menyimpan perubahan.');
+                    return;
+                }
+            }
+
+            editingIndex = index;
+            const item = jadwal[index];
+
+            startDateInput.value = item.tanggal;
+            const itemEndDate = new Date(item.tanggal);
+            itemEndDate.setDate(itemEndDate.getDate() + item.durasi - 1);
+            endDateInput.value = formatDate(itemEndDate);
+            
+            lokasiInput.value = item.lokasi;
+            jenisSelect.value = item.jenis;
+            justifikasiInput.value = item.justifikasi;
+            fungsiPemintaInput.value = item.fungsiPeminta;
+            
+            updateInspekturOptions(); 
+            inspekturSelect.value = item.inspektur;
+
+
+            tambahJadwalButton.textContent = 'Simpan Perubahan';
+            tambahJadwalButton.classList.add('edit-mode');
+            cancelEditButton.style.display = 'block';
+        }
+
+        // Membatalkan mode edit dan mereset form
+        function cancelEdit() {
+            resetForm();
+            showMessage('Mode edit dibatalkan.', 'alert');
+        }
+
+        // Mereset form ke kondisi awal
+        function resetForm() {
+            startDateInput.value = '';
+            endDateInput.value = '';
+            lokasiInput.value = '';
+            jenisSelect.value = jenisInspeksi[0]; 
+            justifikasiInput.value = '';
+            fungsiPemintaInput.value = '';
+            
+            editingIndex = -1; 
+            tambahJadwalButton.textContent = 'Tambah Jadwal';
+            tambahJadwalButton.classList.remove('edit-mode');
+            cancelEditButton.style.display = 'none';
+            updateInspekturOptions(); 
+        }
+
+        // Menghapus jadwal
+        async function hapusJadwal(tanggal, inspektur, jenis, lokasi, durasi, justifikasi, fungsiPeminta) {
+             const password = prompt('Masukkan password Super User untuk menghapus:');
+            if (password !== SUPERUSER_PASSWORD) {
+                alert('Password salah. Anda tidak memiliki hak akses untuk menghapus.');
+                return;
+            }
+
+            // Minta Personal Access Token GitHub
+            if (!githubToken) {
+                githubToken = prompt('Masukkan Personal Access Token GitHub Anda (Token ini tidak akan disimpan di browser Anda secara permanen):');
+                if (!githubToken) {
+                    alert('Token GitHub diperlukan untuk menghapus jadwal.');
+                    return;
+                }
+            }
+
+            if (confirm('Apakah Anda yakin ingin menghapus jadwal ini?')) {
+                // Cari index jadwal yang cocok dengan semua properti untuk memastikan unik
+                const indexToDelete = jadwal.findIndex(j =>
+                    j.tanggal === tanggal &&
+                    j.inspektur === inspektur &&
+                    j.jenis === jenis &&
+                    j.lokasi === lokasi &&
+                    j.durasi === parseInt(durasi) && 
+                    j.justifikasi === justifikasi &&
+                    j.fungsiPeminta === fungsiPeminta
+                );
+
+                if (indexToDelete > -1) {
+                    jadwal.splice(indexToDelete, 1); 
+                    showMessage('Jadwal berhasil dihapus.', 'success');
+                    renderWeeklyCalendar(); 
+                    updateInspekturOptions(); 
+                    await saveJadwalToGitHub(); // Simpan perubahan ke GitHub
+                }
+            }
+        }
+
+        // --- Fungsi Render Kalender Mingguan ---
+
+        function renderWeeklyCalendar() {
+            weeklyCalendarDiv.innerHTML = ''; 
+            const daysInWeek = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const startOfWeek = getStartOfWeek(currentWeekStart);
+            let hasScheduleThisWeek = false;
+
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 6);
+            currentWeekRangeSpan.textContent = `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`;
+            
+            suggestionMessage.style.display = 'none';
+
+            for (let i = 0; i < 7; i++) {
+                const currentDay = new Date(startOfWeek);
+                currentDay.setDate(startOfWeek.getDate() + i);
+                currentDay.setHours(0,0,0,0); 
+                const formattedDate = formatDate(currentDay);
+                const dayOfWeekIndex = currentDay.getDay(); 
+
+                const dayColumn = document.createElement('div');
+                dayColumn.classList.add('day-column');
+                if (dayOfWeekIndex === 0) { 
+                    dayColumn.classList.add('sunday-label'); 
+                }
+
+                const dayHeader = document.createElement('div');
+                dayHeader.classList.add('day-header');
+                dayHeader.textContent = `${daysInWeek[dayOfWeekIndex]} (${formattedDate.substring(5)})`; 
+
+                dayColumn.appendChild(dayHeader);
+
+                const schedulesForThisDay = jadwal.filter(item => {
+                    const itemStartDate = new Date(item.tanggal);
+                    itemStartDate.setHours(0,0,0,0);
+
+                    const itemEndDate = new Date(item.tanggal);
+                    itemEndDate.setDate(itemEndDate.getDate() + item.durasi - 1); 
+                    itemEndDate.setHours(0,0,0,0);
+
+                    return (currentDay >= itemStartDate && currentDay <= itemEndDate);
+                });
+
+                if (schedulesForThisDay.length > 0) {
+                    hasScheduleThisWeek = true;
+                    schedulesForThisDay.forEach(item => {
+                        const scheduleItem = document.createElement('div');
+                        scheduleItem.classList.add('schedule-item');
+                        
+                        const tooltipContent = `
+                            <span><strong>1. Start Date:</strong> ${item.tanggal}</span>
+                            <span><strong>2. End Date:</strong> ${formatDate(new Date(new Date(item.tanggal).setDate(new Date(item.tanggal).getDate() + item.durasi - 1)))}</span>
+                            <span><strong>3. Jenis Inspeksi:</strong> ${item.jenis}</span>
+                            <span><strong>4. Lokasi Inspeksi:</strong> ${item.lokasi}</span>
+                            <span><strong>5. Dasar Pelaksanaan:</strong> ${item.justifikasi}</span>
+                            <span><strong>6. Fungsi Peminta:</strong> ${item.fungsiPeminta}</span>
+                            <span><strong>7. Inspektur:</strong> ${item.inspektur}</span>
+                        `;
+
+                        scheduleItem.innerHTML = `
+                            <strong>${item.inspektur}</strong>
+                            <span>${item.jenis}</span>
+                            <div class="tooltip">${tooltipContent}</div>
+                            <div class="action-buttons">
+                                <button onclick="prepareEdit(${jadwal.indexOf(item)})">✏️</button>
+                                <button class="delete-btn" onclick="hapusJadwal('${item.tanggal}', '${item.inspektur}', '${item.jenis}', '${item.lokasi}', '${item.durasi}', '${item.justifikasi}', '${item.fungsiPeminta}')">🗑️</button>
+                            </div>
+                        `;
+                        dayColumn.appendChild(scheduleItem);
+                    });
+                } else { 
+                    const noSchedule = document.createElement('div');
+                    noSchedule.classList.add('no-schedule');
+                    noSchedule.textContent = 'Tidak ada jadwal';
+                    dayColumn.appendChild(noSchedule);
+                }
+                weeklyCalendarDiv.appendChild(dayColumn);
+            }
+
+            if (jadwal.length === 0) {
+                emptyCalendarMessage.textContent = 'Belum ada jadwal sama sekali. Silakan tambahkan jadwal baru di atas!';
+                emptyCalendarMessage.style.display = 'block';
+                weeklyCalendarDiv.style.display = 'none';
+                suggestionMessage.style.display = 'none';
+            } else if (!hasScheduleThisWeek) {
+                 emptyCalendarMessage.textContent = 'Tidak ada jadwal yang terjadwal untuk minggu ini.';
+                 emptyCalendarMessage.style.display = 'block';
+                 weeklyCalendarDiv.style.display = 'none';
+                 findNextAvailableDate(); 
+            }
+            else {
+                emptyCalendarMessage.style.display = 'none';
+                weeklyCalendarDiv.style.display = 'grid'; 
+                suggestionMessage.style.display = 'none';
+            }
+        }
+
+        // Mencari tanggal kosong terdekat untuk usulan
+        async function findNextAvailableDate() { 
+            let nextDate = new Date(); 
+            nextDate.setDate(nextDate.getDate() + 1); 
+
+            let foundSuggestion = false;
+            let checksCount = 0; 
+
+            while (!foundSuggestion && checksCount < 100) { 
+                nextDate.setHours(0,0,0,0); 
+                
+                const defaultDuration = 1;
+                const tempEndDate = new Date(nextDate);
+                tempEndDate.setDate(nextDate.getDate() + defaultDuration - 1);
+
+                const availableForDefault = ALL_INSPEKTORS.some(inspektur => 
+                    isInspectorAvailable(inspektur, nextDate, tempEndDate, -1) 
+                );
+
+                if (availableForDefault) {
+                    suggestionMessage.textContent = `Semua inspektur sibuk minggu ini. Anda mungkin bisa menjadwalkan inspeksi pada tanggal ${formatDate(nextDate)}.`;
+                    suggestionMessage.style.display = 'block';
+                    foundSuggestion = true;
+                }
+                
+                nextDate.setDate(nextDate.getDate() + 1); 
+                checksCount++;
+            }
+
+            if (!foundSuggestion) {
+                suggestionMessage.textContent = 'Tidak ditemukan tanggal kosong dalam waktu dekat untuk semua inspektur.';
+                suggestionMessage.style.display = 'block';
+            }
+        }
+
+
+        // Navigasi minggu
+        function changeWeek(offset) {
+            currentWeekStart.setDate(currentWeekStart.getDate() + (offset * 7));
+            renderWeeklyCalendar();
+        }
+
+        // --- Inisialisasi Aplikasi ---
+        document.addEventListener('DOMContentLoaded', async () => { 
+            populateJenisInspeksi();
+            const today = new Date();
+            startDateInput.value = formatDate(today);
+            endDateInput.value = formatDate(today); 
+            
+            // Muat jadwal dari GitHub saat aplikasi pertama kali dimuat
+            await fetchJadwalFromGitHub();
+            
+            updateInspekturOptions(); 
+            // renderWeeklyCalendar() sudah dipanggil di fetchJadwalFromGitHub
+        });
+    </script>
+</body>
+</html>
