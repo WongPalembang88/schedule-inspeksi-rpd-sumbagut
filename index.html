@@ -622,14 +622,14 @@
             const currentSha = await getFileSha(); // Dapatkan SHA terbaru
 
             const payload = {
-                message: "Update jadwal dari aplikasi web", // Pesan commit
+                message: `Update jadwal dari aplikasi web pada ${new Date().toLocaleString('id-ID')}`, // Pesan commit lebih deskriptif
                 content: content,
                 sha: currentSha // SHA diperlukan untuk update. Jika null (file baru), GitHub akan membuatnya
             };
 
             try {
                 const response = await fetch(GITHUB_API_URL, {
-                    method: currentSha ? 'PUT' : 'PUT', // PUT untuk update/create
+                    method: 'PUT', // PUT untuk update/create
                     headers: {
                         'Authorization': `token ${githubToken}`,
                         'Content-Type': 'application/json',
